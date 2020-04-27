@@ -141,6 +141,8 @@ public class PokedexAdapter extends RecyclerView.Adapter<PokedexAdapter.PokedexV
                 results.values = filteredPokemon;
                 results.count = filteredPokemon.size();
                 return results;
+
+                // TEST
     }
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {

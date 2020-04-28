@@ -1,10 +1,13 @@
 package edu.harvard.cs50.pokedex;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 
 public class MainActivity extends AppCompatActivity implements SearchView.OnQueryTextListener {
     private RecyclerView recyclerView;
@@ -32,5 +35,17 @@ public class MainActivity extends AppCompatActivity implements SearchView.OnQuer
         searchView.setOnQueryTextListener(this);
 
         return true;
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String newText) {
+        adapter.getFilter().filter(newText);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        adapter.getFilter().filter(newText);
+        return false;
     }
 }

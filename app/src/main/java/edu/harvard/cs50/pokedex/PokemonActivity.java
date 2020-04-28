@@ -4,6 +4,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -24,6 +25,7 @@ public class PokemonActivity extends AppCompatActivity {
     private TextView type2TextView;
     private String url;
     private RequestQueue requestQueue;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -76,5 +78,10 @@ public class PokemonActivity extends AppCompatActivity {
         });
 
         requestQueue.add(request);
+    }
+
+    // Create method to set the catch-button to Catch or Release
+    public void toggleCatch(View view) {
+
     }
 }

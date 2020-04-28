@@ -56,6 +56,9 @@ public class PokedexAdapter extends RecyclerView.Adapter<PokedexAdapter.PokedexV
     private List<Pokemon> pokemon = new ArrayList<>();
     private RequestQueue requestQueue;
 
+    // Create variable to store the filtered Pokémon
+    private List<Pokemon> filtered = new ArrayList<>();
+
     PokedexAdapter(Context context) {
         requestQueue = Volley.newRequestQueue(context);
         loadPokemon();
@@ -76,6 +79,9 @@ public class PokedexAdapter extends RecyclerView.Adapter<PokedexAdapter.PokedexV
                             result.getString("url")
                         ));
                     }
+
+                    // Set filtered to all Pokémon
+                    filtered = pokemon;
 
                     notifyDataSetChanged();
                 } catch (JSONException e) {
@@ -103,14 +109,14 @@ public class PokedexAdapter extends RecyclerView.Adapter<PokedexAdapter.PokedexV
 
     @Override
     public void onBindViewHolder(@NonNull PokedexViewHolder holder, int position) {
-        Pokemon current = pokemon.get(position);
+        Pokemon current = filtered.get(position);
         holder.textView.setText(current.getName());
         holder.containerView.setTag(current);
     }
 
     @Override
     public int getItemCount() {
-        return pokemon.size();
+        return filtered.size();
     }
 
     @Override
@@ -122,31 +128,32 @@ public class PokedexAdapter extends RecyclerView.Adapter<PokedexAdapter.PokedexV
         @Override
         protected FilterResults performFiltering(CharSequence constraint) {
 
-            // Create a list to hold the filtered Pokemon
-            List<String> filteredPokemon = new ArrayList<>();
+            // Search method
+            FilterResults results = new FilterResults();
 
-            // Iterate over available Pokemon
-            for (int i = 0; i < pokemon.size(); i++) {
-
-                // Declare variable to store current name
-                String pokemonName = pokemon.get(i).getName();
-
-                // Add Pokemon name to ArrayList if name matches input
-                if (constraint == pokemonName) {
-                    filteredPokemon.add(pokemonName);
-                }
+            // Return all Pokémon if there is no input
+            if (constraint == null || constraint.length() == 0) {
+                results.values = pokemon;
+                results.count = pokemon.size();
             }
-                // Store filtered Pokemon in FilterResults variable and return value
-                FilterResults results = new FilterResults();
+
+            // Perform search method with user input
+            else {
+                List<Pokemon> filteredPokemon = new ArrayList<>();
+                for (Pokemon p : pokemon) {
+                    if (p.getName().toLowerCase().contains(constraint.toString().toLowerCase())) {
+                        filteredPokemon.add(p);
+                    }
+                }
                 results.values = filteredPokemon;
                 results.count = filteredPokemon.size();
-                return results;
-
-                // TEST
+            }
+            return results;
     }
+
         @Override
         protected void publishResults(CharSequence constraint, FilterResults results) {
-            List<Pokemon> filtered = (List<Pokemon>) results.values;
+            filtered = (List<Pokemon>) results.values;
             notifyDataSetChanged();
         }
     }

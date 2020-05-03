@@ -8,6 +8,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -16,6 +17,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.Volley;
+import com.squareup.picasso.Picasso;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -30,6 +32,7 @@ public class PokemonActivity extends AppCompatActivity {
     private RequestQueue requestQueue;
     private Button catch_pokemon_button;
     private String pokemonName;
+    private ImageView spriteView;
 
     SharedPreferences settings;
 
@@ -45,6 +48,7 @@ public class PokemonActivity extends AppCompatActivity {
         type1TextView = findViewById(R.id.pokemon_type1);
         type2TextView = findViewById(R.id.pokemon_type2);
         catch_pokemon_button = findViewById(R.id.caught);
+        spriteView = findViewById(R.id.pokemon_sprite);
         settings = getSharedPreferences("USER", Context.MODE_PRIVATE);
 
         load();
@@ -71,6 +75,11 @@ public class PokemonActivity extends AppCompatActivity {
                     else {
                         catch_pokemon_button.setText("Catch");
                     }
+
+                    // Download image sprite form URL and set in image view
+                    JSONObject spriteEntries = response.getJSONObject("sprites");
+                    String spriteURL = spriteEntries.getString("front_default");
+                    Picasso.get().load(spriteURL).into(spriteView);
 
                     JSONArray typeEntries = response.getJSONArray("types");
                     for (int i = 0; i < typeEntries.length(); i++) {

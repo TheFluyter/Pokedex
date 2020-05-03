@@ -2,9 +2,12 @@ package edu.harvard.cs50.pokedex;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -25,7 +28,10 @@ public class PokemonActivity extends AppCompatActivity {
     private TextView type2TextView;
     private String url;
     private RequestQueue requestQueue;
+    private Button catch_pokemon_button;
+    private String pokemonName;
 
+    SharedPreferences settings;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,6 +44,8 @@ public class PokemonActivity extends AppCompatActivity {
         numberTextView = findViewById(R.id.pokemon_number);
         type1TextView = findViewById(R.id.pokemon_type1);
         type2TextView = findViewById(R.id.pokemon_type2);
+        catch_pokemon_button = findViewById(R.id.caught);
+        settings = getSharedPreferences("USER", Context.MODE_PRIVATE);
 
         load();
     }
@@ -52,6 +60,17 @@ public class PokemonActivity extends AppCompatActivity {
                 try {
                     nameTextView.setText(response.getString("name"));
                     numberTextView.setText(String.format("#%03d", response.getInt("id")));
+
+                    // Store Pokemon name as string to search for catch-release
+                    pokemonName = response.getString("name");
+
+                    // Set correct catch-release text in button
+                    if (settings.getBoolean(pokemonName, false)) {
+                        catch_pokemon_button.setText("Release");
+                    }
+                    else {
+                        catch_pokemon_button.setText("Catch");
+                    }
 
                     JSONArray typeEntries = response.getJSONArray("types");
                     for (int i = 0; i < typeEntries.length(); i++) {
@@ -80,8 +99,16 @@ public class PokemonActivity extends AppCompatActivity {
         requestQueue.add(request);
     }
 
-    // Create method to set the catch-button to Catch or Release
-    public void toggleCatch(View view) {
+    // Method to set catch or release text for catch-button based on caught ArrayList
+    public void catchRelease(View view) {
 
+        if (settings.getBoolean(pokemonName, false)) {
+            catch_pokemon_button.setText("Catch");
+            settings.edit().putBoolean(pokemonName, false).apply();
+        }
+        else {
+            catch_pokemon_button.setText("Release");
+            settings.edit().putBoolean(pokemonName, true).apply();
+        }
     }
 }

@@ -11,6 +11,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/pokemon_name"
         android:textAlignment="center"
+        android:textStyle="bold"
         android:textSize="18sp"
         android:paddingTop="10dp" />
     <TextView
@@ -25,6 +26,7 @@
         android:layout_height="wrap_content"
         android:id="@+id/pokemon_type1"
         android:textAlignment="center"
+        android:textStyle="italic"
         android:textSize="16sp"
         android:paddingTop="5dp" />
     <TextView
@@ -32,15 +34,21 @@
         android:layout_height="wrap_content"
         android:id="@+id/pokemon_type2"
         android:textAlignment="center"
+        android:textStyle="italic"
         android:textSize="16sp"
         android:paddingTop="5dp" />
-
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/pokemon_flavor_text"
+        android:textAlignment="center"
+        android:textSize="14sp"
+        android:paddingTop="5dp"/>
     <ImageView
         android:id="@+id/pokemon_sprite"
         android:layout_width="150dp"
         android:layout_height="150dp"
         android:layout_gravity="center_horizontal" />
-
     <Button
         android:id="@+id/caught"
         android:layout_width="wrap_content"

@@ -28,10 +28,13 @@ public class PokemonActivity extends AppCompatActivity {
     private TextView numberTextView;
     private TextView type1TextView;
     private TextView type2TextView;
+    private TextView flavorTextTextView;
     private String url;
+    private String speciesURL;
     private RequestQueue requestQueue;
     private Button catch_pokemon_button;
     private String pokemonName;
+    private String flavorText;
     private ImageView spriteView;
 
     SharedPreferences settings;
@@ -50,6 +53,7 @@ public class PokemonActivity extends AppCompatActivity {
         catch_pokemon_button = findViewById(R.id.caught);
         spriteView = findViewById(R.id.pokemon_sprite);
         settings = getSharedPreferences("USER", Context.MODE_PRIVATE);
+        flavorTextTextView = findViewById(R.id.pokemon_flavor_text);
 
         load();
     }
@@ -62,7 +66,11 @@ public class PokemonActivity extends AppCompatActivity {
             @Override
             public void onResponse(JSONObject response) {
                 try {
-                    nameTextView.setText(response.getString("name"));
+                    // Get name and set first letter to upper and the rest to lower case
+                    String name = response.getString("name");
+                    String upperName = name.substring(0, 1).toUpperCase() + name.substring(1).toLowerCase();
+                    nameTextView.setText(upperName);
+
                     numberTextView.setText(String.format("#%03d", response.getInt("id")));
 
                     // Store Pokemon name as string to search for catch-release
@@ -80,6 +88,11 @@ public class PokemonActivity extends AppCompatActivity {
                     JSONObject spriteEntries = response.getJSONObject("sprites");
                     String spriteURL = spriteEntries.getString("front_default");
                     Picasso.get().load(spriteURL).into(spriteView);
+
+                    // Get URL to flavor species entries and set flavor text entry
+                    JSONObject speciesEntries = response.getJSONObject("species");
+                    speciesURL = speciesEntries.getString("url");
+                    getFlavorText(speciesURL);
 
                     JSONArray typeEntries = response.getJSONArray("types");
                     for (int i = 0; i < typeEntries.length(); i++) {
@@ -102,6 +115,43 @@ public class PokemonActivity extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 Log.e("cs50", "Pokemon details error", error);
+            }
+        });
+
+        requestQueue.add(request);
+    }
+
+    // Get flavor text method with a separate API call
+    public void getFlavorText(String flavorTextURL) {
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, flavorTextURL, null, new Response.Listener<JSONObject>() {
+            @Override
+            public void onResponse(JSONObject response) {
+                Log.d("RESPONSE", response.toString());
+
+                try {
+                    JSONArray flavorTextEntries = response.getJSONArray("flavor_text_entries");
+
+                    for (int i = 0; i < flavorTextEntries.length(); i++) {
+                        JSONObject flavorTextEntry = flavorTextEntries.getJSONObject(i);
+                        JSONObject language = flavorTextEntry.getJSONObject("language");
+                        String languageName = language.getString("name");
+
+                        if (languageName.equals("en")) {
+                            flavorText = flavorTextEntry.getString("flavor_text");
+                            flavorTextTextView.setText(flavorText);
+                            break;
+
+                        }
+                    }
+                } catch (JSONException e) {
+                    Log.e("cs50", "Flavor text json error", e);
+                }
+            }
+        }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.e("cs50", "Pokemon flavor text details error", error);
+
             }
         });
 
